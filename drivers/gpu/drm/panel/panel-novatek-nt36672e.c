@@ -7,6 +7,8 @@
 #include <linux/of.h>
 #include <linux/regulator/consumer.h>
 
+#include <drm/display/drm_dsc.h>
+#include <drm/display/drm_dsc_helper.h>
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
@@ -34,12 +36,14 @@ struct panel_desc {
 	unsigned int lanes;
 	const char *panel_name;
 	void (*init_sequence)(struct mipi_dsi_multi_context *ctx);
+	const struct drm_dsc_config *dsc;
 };
 
 struct nt36672e_panel {
 	struct drm_panel panel;
 	struct mipi_dsi_device *dsi;
 	struct gpio_desc *reset_gpio;
+	struct drm_dsc_config dsc;
 	struct regulator_bulk_data supplies[3];
 	const struct panel_desc *desc;
 };
@@ -357,6 +361,132 @@ static void nt36672e_1080x2408_60hz_init(struct mipi_dsi_multi_context *ctx)
 	mipi_dsi_dcs_write_seq_multi(ctx, 0x55, 0x01);
 }
 
+
+static void nt36672e_1080x2460_144hz_init(struct mipi_dsi_multi_context *ctx)
+{
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0x20);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0x10);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x36, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x3b, 0x03, 0x14, 0x3c, 0x04, 0x04);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xb0, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xc0, 0x03);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xc2, 0x1b, 0xa0);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xe9, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0xe0);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x35, 0x82);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x85, 0x32);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0xf0);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1c, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x33, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5a, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x9f, 0x0c);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0xd0);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x53, 0x22);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x54, 0x02);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0xc0);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x9c, 0x11);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x9d, 0x11);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0x10);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xc0, 0x03);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0x23);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x00, 0x80);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x04, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x05, 0x24);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x06, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x07, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x08, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x09, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x10, 0x7f);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x11, 0x01);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x12, 0x95);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x15, 0x68);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x16, 0x0b);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x19, 0x00);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1a, 0x04);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1b, 0x08);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1c, 0x0c);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1d, 0x10);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1e, 0x14);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x1f, 0x18);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x20, 0x1c);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x21, 0x20);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x22, 0x24);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x23, 0x28);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x24, 0x2c);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x25, 0x30);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x26, 0x34);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x27, 0x38);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x28, 0x3c);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x29, 0x10);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x2a, 0x20);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x2b, 0x20);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x58, 0xff);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x59, 0xfd);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5a, 0xf9);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5b, 0xf2);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5c, 0xeb);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5d, 0xe2);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5e, 0xd8);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x5f, 0xce);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x60, 0xc3);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x61, 0xb9);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x62, 0xb0);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x63, 0xa8);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x64, 0xa1);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x65, 0x9a);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x66, 0x97);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x67, 0x95);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xff, 0x10);
+	mipi_dsi_dcs_write_seq_multi(ctx, 0xfb, 0x01);
+	/* skip brightness/cabc: 51 0c cc */
+	mipi_dsi_dcs_write_seq_multi(ctx, 0x53, 0x2c);
+	/* skip brightness/cabc: 55 01 */
+}
+
+static const struct drm_dsc_config nt36672e_xpeng_dsc = {
+	.dsc_version_major = 1,
+	.dsc_version_minor = 1,
+	.slice_height = 20,
+	.slice_width = 540,
+	.slice_count = 2,
+	.bits_per_component = 8,
+	.bits_per_pixel = 8 << 4,
+	.block_pred_enable = true,
+};
+
+static const struct drm_display_mode nt36672e_1080x2460_144hz = {
+	.name = "1080x2460",
+	.clock = 414040,
+	.hdisplay = 1080,
+	.hsync_start = 1080 + 32,
+	.hsync_end = 1080 + 32 + 4,
+	.htotal = 1080 + 32 + 4 + 16,
+	.vdisplay = 2460,
+	.vsync_start = 2460 + 10,
+	.vsync_end = 2460 + 10 + 10,
+	.vtotal = 2460 + 10 + 10 + 60,
+	.flags = 0,
+};
+
+static const struct panel_desc nt36672e_xpeng_desc = {
+	.display_mode = &nt36672e_1080x2460_144hz,
+	.width_mm = 69,
+	.height_mm = 157,
+	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_LPM | MIPI_DSI_CLOCK_NON_CONTINUOUS,
+	.format = MIPI_DSI_FMT_RGB888,
+	.lanes = 4,
+	.panel_name = "tianma nt36672e fhd plus 144hz",
+	.init_sequence = nt36672e_1080x2460_144hz_init,
+	.dsc = &nt36672e_xpeng_dsc,
+};
+
 static int nt36672e_power_on(struct nt36672e_panel *ctx)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
@@ -412,6 +542,14 @@ static int nt36672e_on(struct nt36672e_panel *nt36672e)
 	mipi_dsi_dcs_set_display_on_multi(&ctx);
 
 	mipi_dsi_msleep(&ctx, 100);
+
+	if (desc->dsc) {
+		struct drm_dsc_picture_parameter_set pps;
+
+		drm_dsc_pps_payload_pack(&pps, &nt36672e->dsc);
+		mipi_dsi_picture_parameter_set_multi(&ctx, &pps);
+		mipi_dsi_compression_mode_multi(&ctx, true);
+	}
 
 	return ctx.accum_err;
 }
@@ -551,6 +689,11 @@ static int nt36672e_panel_probe(struct mipi_dsi_device *dsi)
 	ctx->dsi = dsi;
 	mipi_dsi_set_drvdata(dsi, ctx);
 
+	if (ctx->desc->dsc) {
+		ctx->dsc = *ctx->desc->dsc;
+		dsi->dsc = &ctx->dsc;
+	}
+
 	dsi->lanes = ctx->desc->lanes;
 	dsi->format = ctx->desc->format;
 	dsi->mode_flags = ctx->desc->mode_flags;
@@ -588,6 +731,10 @@ static const struct of_device_id nt36672e_of_match[] = {
 	{
 		.compatible = "novatek,nt36672e",
 		.data = &nt36672e_panel_desc,
+	},
+	{
+		.compatible = "tianma,nt36672e",
+		.data = &nt36672e_xpeng_desc,
 	},
 	{ }
 };
