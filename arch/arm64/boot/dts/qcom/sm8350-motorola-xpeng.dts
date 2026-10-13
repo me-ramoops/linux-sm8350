@@ -3,6 +3,7 @@
 /dts-v1/;
 
 #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+#include <dt-bindings/leds/common.h>
 #include "sm8350.dtsi"
 #include "pm8350.dtsi"
 #include "pm8350b.dtsi"
@@ -307,6 +308,24 @@
 
 &tlmm {
 	gpio-reserved-ranges = <52 8>;
+
+	lcd_bias_vsp: regulator-vsp {
+		compatible = "regulator-fixed";
+		regulator-name = "lcd_bias_vsp";
+		gpio = <&tlmm 2 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		startup-delay-us = <300>;
+		regulator-boot-on;
+	};
+
+	lcd_bias_vsn: regulator-vsn {
+		compatible = "regulator-fixed";
+		regulator-name = "lcd_bias_vsn";
+		gpio = <&tlmm 3 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		startup-delay-us = <300>;
+		regulator-boot-on;
+	};
 };
 
 &uart2 {
@@ -376,4 +395,70 @@
 
 &ipa {
 	status = "okay";
+};
+
+&mdss {
+	status = "okay";
+};
+
+&mdss_dsi0 {
+	status = "okay";
+
+	panel@0 {
+		compatible = "tianma,nt36672e";
+		reg = <0>;
+
+		reset-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
+
+		vddi-supply = <&vreg_l6c_1p8>;
+		avdd-supply = <&lcd_bias_vsp>;
+		avee-supply = <&lcd_bias_vsn>;
+
+		backlight = <&lcd_backlight>;
+
+		port {
+			panel0_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0_out {
+	remote-endpoint = <&panel0_in>;
+};
+
+&mdss_dsi0_phy {
+	status = "okay";
+};
+
+&qupv3_id_1 {
+	status = "okay";
+};
+
+&i2c13 {
+	status = "okay";
+
+	led-controller@35 {
+		compatible = "ti,lm3697";
+		reg = <0x35>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		enable-gpios = <&tlmm 13 GPIO_ACTIVE_HIGH>;
+		vled-supply = <&vph_pwr>;
+
+		lm3697_lcd: led@0 {
+			reg = <0>;
+			function = LED_FUNCTION_BACKLIGHT;
+			led-sources = <0 1 2>;
+		};
+	};
+};
+
+lcd_backlight: backlight {
+	compatible = "led-backlight";
+	leds = <&lm3697_lcd>;
+	brightness-levels = <0 1 2 4 8 16 32 64 128 256 384 512 768 1024 1536 2047>;
+	default-brightness-level = <13>;
 };
