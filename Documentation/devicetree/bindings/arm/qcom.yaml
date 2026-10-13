@@ -1114,6 +1114,7 @@ properties:
       - items:
           - enum:
               - microsoft,surface-duo2
+              - motorola,tundra
               - motorola,xpeng
               - qcom,sm8350-hdk
               - qcom,sm8350-mtp
