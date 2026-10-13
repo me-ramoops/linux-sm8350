@@ -1,0 +1,23 @@
+image: fedora:latest
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "api"'
+    - when: never
+
+stages:
+  - build
+
+build-xpeng:
+  stage: build
+  when: manual
+  script:
+    - dnf -y install bc bison diffutils findutils flex gcc gcc-aarch64-linux-gnu git gzip make openssl-devel python3
+    - make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
+    - make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j"$(nproc)" Image dtbs
+    - test -s arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
+  artifacts:
+    paths:
+      - arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
+    expire_in: 1 week
