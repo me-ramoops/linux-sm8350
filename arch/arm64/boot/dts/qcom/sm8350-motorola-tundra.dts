@@ -377,3 +377,36 @@
 &ipa {
 	status = "okay";
 };
+
+&mdss {
+	status = "okay";
+};
+
+&mdss_dsi0 {
+	status = "okay";
+
+	panel@0 {
+		compatible = "novatek,nt37701";
+		reg = <0>;
+
+		reset-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
+
+		vddio-supply = <&vreg_l6c_1p8>;
+		vci-supply = <&vreg_l3c_3p0>;
+		vdd-supply = <&vreg_l10c_1p2>;
+
+		port {
+			panel0_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0_out {
+	remote-endpoint = <&panel0_in>;
+};
+
+&mdss_dsi0_phy {
+	status = "okay";
+};
