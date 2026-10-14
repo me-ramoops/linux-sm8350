@@ -456,9 +456,11 @@
 	};
 };
 
-lcd_backlight: backlight {
-	compatible = "led-backlight";
-	leds = <&lm3697_lcd>;
-	brightness-levels = <0 1 2 4 8 16 32 64 128 256 384 512 768 1024 1536 2047>;
-	default-brightness-level = <13>;
+/ {
+	lcd_backlight: backlight {
+		compatible = "led-backlight";
+		leds = <&lm3697_lcd>;
+		brightness-levels = <0 1 2 4 8 16 32 64 128 256 384 512 768 1024 1536 2047>;
+		default-brightness-level = <13>;
+	};
 };
