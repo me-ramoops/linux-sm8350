@@ -36,6 +36,7 @@ jobs:
         with:
           name: sm8350-xpeng-kernel
           path: |
+            arch/arm64/boot/Image
             arch/arm64/boot/Image.gz
             arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
             arch/arm64/boot/dts/qcom/sm8350-motorola-tundra.dtb
