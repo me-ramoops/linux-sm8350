@@ -464,3 +464,14 @@
 		default-brightness-level = <13>;
 	};
 };
+
+&reserved_memory {
+	ramoops_mem: ramoops@b5000000 {
+		compatible = "ramoops";
+		reg = <0x0 0xb5000000 0x0 0x800000>;
+		console-size = <0x400000>;
+		pmsg-size = <0x200000>;
+		record-size = <0x200000>;
+		ecc-size = <32>;
+	};
+};
