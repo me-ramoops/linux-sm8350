@@ -1,0 +1,42 @@
+name: Build sm8350 kernel
+
+on:
+  push:
+    branches: [sm8350/latest, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update -yqq
+          sudo apt-get install -yqq bc bison flex gcc-aarch64-linux-gnu git gzip libssl-dev make python3
+
+      - name: Build Image and DTBs
+        run: |
+          set -euxo pipefail
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
+          scripts/kconfig/merge_config.sh -m .config arch/arm64/configs/xpeng.config
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j"$(nproc)" Image Image.gz dtbs
+          test -s arch/arm64/boot/Image.gz
+          test -s arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
+          test -s arch/arm64/boot/dts/qcom/sm8350-motorola-tundra.dtb
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sm8350-xpeng-kernel
+          path: |
+            arch/arm64/boot/Image.gz
+            arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
+            arch/arm64/boot/dts/qcom/sm8350-motorola-tundra.dtb
+          if-no-files-found: error
