@@ -15,11 +15,14 @@ build-xpeng:
   script:
     - dnf -y install bc bison diffutils dtc findutils flex gcc gcc-aarch64-linux-gnu git gzip make openssl-devel python3
     - make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- defconfig
-    - make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j"$(nproc)" Image dtbs
+    - scripts/kconfig/merge_config.sh -m .config arch/arm64/configs/xpeng.config
+    - make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j"$(nproc)" Image Image.gz dtbs
     - test -s arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
     - test -s arch/arm64/boot/dts/qcom/sm8350-motorola-tundra.dtb
+    - test -s arch/arm64/boot/Image.gz
   artifacts:
     paths:
+      - arch/arm64/boot/Image.gz
       - arch/arm64/boot/dts/qcom/sm8350-motorola-xpeng.dtb
       - arch/arm64/boot/dts/qcom/sm8350-motorola-tundra.dtb
     expire_in: 1 week
